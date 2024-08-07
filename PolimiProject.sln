@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolimiProject", "PolimiProject\PolimiProject.csproj", "{4745A2ED-FC54-4C94-8395-7C4D21BAC443}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4745A2ED-FC54-4C94-8395-7C4D21BAC443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4745A2ED-FC54-4C94-8395-7C4D21BAC443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4745A2ED-FC54-4C94-8395-7C4D21BAC443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4745A2ED-FC54-4C94-8395-7C4D21BAC443}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
