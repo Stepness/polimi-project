@@ -7,12 +7,12 @@ using Microsoft.Azure.Cosmos.Linq;
 
 namespace PolimiProject.Services;
 
-public class CosmosRepository : IRepository
+public class CosmosRepositoryUsers : IRepositoryUsers
 {
     
     private readonly Container _loginContainer;
     
-    public CosmosRepository(CosmosClient cosmosClient)
+    public CosmosRepositoryUsers(CosmosClient cosmosClient)
     {
         _loginContainer = cosmosClient.GetContainer("polimiproject", "users");
     }

@@ -2,7 +2,7 @@ using PolimiProject.Models;
 
 namespace PolimiProject.Services;
 
-public interface IRepository
+public interface IRepositoryUsers
 {
     Task<UserEntity?> Authenticate(string username, string password);
     Task<List<UserEntity>> GetAllUsers();

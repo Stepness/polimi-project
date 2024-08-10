@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IRepository _repository;
+    private readonly IRepositoryUsers _repositoryUsers;
 
-    public UsersController(IRepository repository)
+    public UsersController(IRepositoryUsers repositoryUsers)
     {
-        _repository = repository;
+        _repositoryUsers = repositoryUsers;
     }
 
     [HttpPost("register")]
@@ -29,7 +29,7 @@ public class UsersController : ControllerBase
             Role = Roles.Guest
         };
         
-        var addUserResult = await _repository.AddUserAsync(user);
+        var addUserResult = await _repositoryUsers.AddUserAsync(user);
 
         if (addUserResult.Result == AddUserResultType.UserAlreadyExists)
             return Conflict(new { message = "Username already exist" });
@@ -40,7 +40,7 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(SignDto model)
     {
-        var user = await _repository.Authenticate(model.Username, model.Password);
+        var user = await _repositoryUsers.Authenticate(model.Username, model.Password);
 
         if (user == null)
             return Unauthorized(new { message = "Username or password is incorrect" });
@@ -52,7 +52,7 @@ public class UsersController : ControllerBase
     [Authorize(Policy = IdentityData.AdminUserPolicy)]
     public async Task<IActionResult> GetAll()
     {
-        var users = await _repository.GetAllUsers();
+        var users = await _repositoryUsers.GetAllUsers();
         return Ok(users.Select(x => new{ x.Username, x.Role }).ToList());
     }
 
@@ -60,7 +60,7 @@ public class UsersController : ControllerBase
     [Authorize(Policy = IdentityData.AdminUserPolicy)]
     public async Task<IActionResult> PromoteRole(string username)
     {
-        if (await _repository.UpdateUserRoleToViewer(username))
+        if (await _repositoryUsers.UpdateUserRoleToViewer(username))
             return Ok();
 
         return BadRequest();

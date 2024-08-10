@@ -19,7 +19,8 @@ public class Program
         builder.Services.AddCustomAuthorization();
         
         var cosmosDbConnectionString = builder.Configuration["CosmosDbConnectionString"]; //Its a secret 🤫
-        builder.Services.AddScoped<IRepository, CosmosRepository>();
+        builder.Services.AddScoped<IRepositoryUsers, CosmosRepositoryUsers>();
+        builder.Services.AddScoped<IRepositoryData, CosmosRepositoryData>();
 
         builder.Services.AddSingleton(new CosmosClient(
             cosmosDbConnectionString,
