@@ -40,7 +40,7 @@ public class BlobController : ControllerBase
     {
         var blobEntity = await _repositoryData.DownloadFileAsync(id);
         
-        // Response.Headers.Append("Content-Disposition", blobEntity.ContentDisposition);
+        Response.Headers.Append("Content-Disposition", blobEntity.ContentDisposition);
         return File(blobEntity.Data, blobEntity.ContentType, blobEntity.FileName);
     }
 }
