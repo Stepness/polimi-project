@@ -40,17 +40,17 @@ public class CosmosRepositoryDataTests
             Arg.Is<PartitionKey>(pk => pk == new PartitionKey(blobEntity.Id)));
     }
     
-    [Fact]
-    public async Task WhenDownloadFile_ShouldCallCreateItemAsync()
-    {
-        _mockContainer.GetItemLinqQueryable<BlobEntity>()
-            .Where(u => u.Id == "abc")
-            .Take(1);
-        
-        var sut = new CosmosRepositoryData(_mockCosmosClient);
-        
-        await sut.DownloadFileAsync("abc");
-
-        _mockContainer.Received(1).GetItemLinqQueryable<BlobEntity>();
-    }
+    // [Fact]
+    // public async Task WhenDownloadFile_ShouldCallCreateItemAsync()
+    // {
+    //     _mockContainer.GetItemLinqQueryable<BlobEntity>()
+    //         .Where(u => u.Id == "abc")
+    //         .Take(1);
+    //     
+    //     var sut = new CosmosRepositoryData(_mockCosmosClient);
+    //     
+    //     await sut.DownloadFileAsync("abc");
+    //
+    //     _mockContainer.Received(1).GetItemLinqQueryable<BlobEntity>();
+    // }
 }

@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PolimiProject.Identity;
 using PolimiProject.Models;
 using PolimiProject.Services;
 
@@ -31,7 +33,7 @@ public class BlobController : ControllerBase
         };
         
         await _repositoryData.UploadFileAsync(blob);
-        return Ok(model.ToString());
+        return Ok();
     }
     
     [HttpGet("download")]
@@ -39,8 +41,6 @@ public class BlobController : ControllerBase
     public async Task<ActionResult<IFormFile>> Download(string id)
     {
         var blobEntity = await _repositoryData.DownloadFileAsync(id);
-        
-        Response.Headers.Append("Content-Disposition", blobEntity.ContentDisposition);
         return File(blobEntity.Data, blobEntity.ContentType, blobEntity.FileName);
     }
 }
