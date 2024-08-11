@@ -1,5 +1,7 @@
+using System.Reflection.Metadata;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using PolimiProject.Identity;
 using PolimiProject.Models;
 
 namespace PolimiProject.Services;
@@ -25,7 +27,7 @@ public class CosmosRepositoryData : IRepositoryData
             .Where(u => u.Id == id)
             .Take(1)
             .ToFeedIterator();
-
+        
         if (query.HasMoreResults)
         {
             var response = await query.ReadNextAsync();

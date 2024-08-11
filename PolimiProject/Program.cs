@@ -17,8 +17,8 @@ public class Program
         builder.Services.AddCustomSwaggerConfiguration();
         builder.Services.AddCustomAuthentication();
         builder.Services.AddCustomAuthorization();
-        
-        var cosmosDbConnectionString = builder.Configuration["CosmosDbConnectionString"]; //Its a secret 🤫
+
+        var cosmosDbConnectionString = builder.Configuration["CosmosDbConnectionString"];
         builder.Services.AddScoped<IRepositoryUsers, CosmosRepositoryUsers>();
         builder.Services.AddScoped<IRepositoryData, CosmosRepositoryData>();
 
