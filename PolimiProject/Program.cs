@@ -33,15 +33,31 @@ public class Program
             }
         ));
         
+        const string allowedOrigins = "AllowedOrigins";
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: allowedOrigins,
+                policy =>
+                {
+                    policy
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .AllowAnyMethod()
+                        .WithOrigins("http://127.0.0.1:5500", "http://localhost:5500");
+                });
+        });
+        
         var app = builder.Build();
         
-        app.MapControllers();
-        
+        app.UseCors(allowedOrigins);
+
         app.UseSwagger();
         app.UseSwaggerUI();
 
         app.UseAuthentication();
         app.UseAuthorization();
+        app.MapControllers();
+
         
         app.Run();
     }

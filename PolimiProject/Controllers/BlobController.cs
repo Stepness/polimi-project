@@ -28,7 +28,6 @@ public class BlobController : ControllerBase
         var blob = new BlobEntity()
         {
             FileName = model.FileName,
-            ContentDisposition = model.ContentDisposition,
             ContentType = model.ContentType,
             Data = fileBytes
         };
@@ -50,5 +49,13 @@ public class BlobController : ControllerBase
     {
         await _repositoryData.RenameFileAsync(fileName, newName);
         return Ok();
+    }
+    
+    [HttpGet("files")]
+    [Authorize(Policy = IdentityData.WriterUserPolicy)]
+    public async Task<ActionResult> GetAllFiles()
+    {
+        var files =await _repositoryData.GetAllFilesAsync();
+        return Ok(files);
     }
 }

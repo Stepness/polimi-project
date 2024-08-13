@@ -47,6 +47,27 @@ public class CosmosRepositoryData : IRepositoryData
         return await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
     }
 
+    public async Task<List<BlobEntity>> GetAllFilesAsync()
+    {
+        var result = new List<BlobEntity>();
+        var files = _dataContainer.GetItemLinqQueryable<BlobEntity>().Select(x=>new
+            BlobEntity
+            {
+                Id = x.Id,
+                FileName = x.FileName,
+                ContentType = x.ContentType
+            }
+        ).ToFeedIterator();
+        
+        while (files.HasMoreResults)
+        {
+            var response = await files.ReadNextAsync();
+            result.AddRange(response.Resource);
+        }
+
+        return result;
+    }
+
     private async Task<BlobEntity> SearchFileNameAsync(string fileName)
     {
         var query = _dataContainer.GetItemLinqQueryable<BlobEntity>()
@@ -57,8 +78,7 @@ public class CosmosRepositoryData : IRepositoryData
         if (query.HasMoreResults)
         {
             var response = await query.ReadNextAsync();
-            var res = response.FirstOrDefault();
-            return res;
+            return response.FirstOrDefault();
         }
 
         return null;

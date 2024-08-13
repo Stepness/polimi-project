@@ -6,5 +6,4 @@ public class BlobEntity
     public byte[] Data { get; set; }
     public string FileName { get; set; }
     public string ContentType { get; set; }
-    public string ContentDisposition { get; set; }
 }
