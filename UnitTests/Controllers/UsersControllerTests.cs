@@ -31,7 +31,7 @@ public class UsersControllerTests
     public async Task WhenRegister_ShouldAddNewUser()
     {
         var signDto = new SignDto { Username = "username", Password = "password" };
-        var userEntity = new UserEntity { Username = signDto.Username, Password = signDto.Password, Role = Roles.Guest };
+        var userEntity = new UserEntity { Username = signDto.Username, Password = signDto.Password, Role = Roles.Reader };
         
         var addUserResult = new AddUserResult
         {
@@ -46,7 +46,7 @@ public class UsersControllerTests
         await _repositoryUsersMock.Received(1).AddUserAsync(Arg.Is<UserEntity>(u =>
             u.Username == signDto.Username &&
             u.Password == signDto.Password &&
-            u.Role == Roles.Guest
+            u.Role == Roles.Reader
         ));
 
         result.Should().BeOfType<OkObjectResult>()
@@ -75,7 +75,7 @@ public class UsersControllerTests
         var users = new List<UserEntity>
         {
             new() { Username = "user1", Role = Roles.Admin },
-            new() { Username = "user2", Role = Roles.Guest },
+            new() { Username = "user2", Role = Roles.Reader },
         };
 
         var expectedUsers = users.Select(x => new { x.Username, x.Role }).ToList();
@@ -92,7 +92,7 @@ public class UsersControllerTests
     public async Task WhenLoginSuccessful_ReturnToken()
     {
         var signDto = new SignDto { Username = "username", Password = "password" };
-        var userEntity = new UserEntity { Username = signDto.Username, Role = Roles.Viewer };
+        var userEntity = new UserEntity { Username = signDto.Username, Role = Roles.Writer };
 
         _repositoryUsersMock.Authenticate(signDto.Username, signDto.Password)!.Returns(Task.FromResult(userEntity));
 

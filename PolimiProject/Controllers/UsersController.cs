@@ -26,7 +26,7 @@ public class UsersController : ControllerBase
         {
             Username = signDto.Username,
             Password = signDto.Password,
-            Role = Roles.Guest
+            Role = Roles.Reader
         };
         
         var addUserResult = await _repositoryUsers.AddUserAsync(user);
@@ -60,7 +60,7 @@ public class UsersController : ControllerBase
     [Authorize(Policy = IdentityData.AdminUserPolicy)]
     public async Task<IActionResult> PromoteRole(string username)
     {
-        if (await _repositoryUsers.UpdateUserRoleToViewer(username))
+        if (await _repositoryUsers.UpdateUserRoleToWriter(username))
             return Ok();
 
         return BadRequest();

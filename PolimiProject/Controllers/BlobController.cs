@@ -18,6 +18,7 @@ public class BlobController : ControllerBase
     }
     
     [HttpPost("upload")]
+    [Authorize(Policy = IdentityData.WriterUserPolicy)]
     public async Task<ActionResult> Upload(IFormFile model)
     {
         using var ms = new MemoryStream();
@@ -32,15 +33,22 @@ public class BlobController : ControllerBase
             Data = fileBytes
         };
         
-        await _repositoryData.UploadFileAsync(blob);
+        await _repositoryData.UpsertFileAsync(blob);
         return Ok();
     }
     
     [HttpGet("download")]
-    [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IFormFile>> Download(string id)
+    public async Task<ActionResult<IFormFile>> Download(string fileName)
     {
-        var blobEntity = await _repositoryData.DownloadFileAsync(id);
+        var blobEntity = await _repositoryData.DownloadFileAsync(fileName);
         return File(blobEntity.Data, blobEntity.ContentType, blobEntity.FileName);
+    }
+    
+    [HttpPut("{fileName}/rename")]
+    [Authorize(Policy = IdentityData.WriterUserPolicy)]
+    public async Task<ActionResult> Rename(string fileName, string newName)
+    {
+        await _repositoryData.RenameFileAsync(fileName, newName);
+        return Ok();
     }
 }

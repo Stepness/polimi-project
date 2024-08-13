@@ -1,7 +1,5 @@
-using System.Reflection.Metadata;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
-using PolimiProject.Identity;
 using PolimiProject.Models;
 
 namespace PolimiProject.Services;
@@ -14,24 +12,53 @@ public class CosmosRepositoryData : IRepositoryData
     {
         _dataContainer = cosmosClient.GetContainer("polimiproject", "data");
     }
-    
-    public async Task UploadFileAsync(BlobEntity file)
+
+    public async Task UpsertFileAsync(BlobEntity file)
     {
-        file.Id = Guid.NewGuid().ToString();
-        await _dataContainer.CreateItemAsync(file, new PartitionKey(file.Id));
+        var existingFile = await SearchFileNameAsync(file.FileName)!;
+
+        file.Id = existingFile is null ? Guid.NewGuid().ToString() : existingFile.Id;
+
+        await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
     }
 
-    public async Task<BlobEntity> DownloadFileAsync(string id)
+    public async Task<BlobEntity> DownloadFileAsync(string fileName)
+    {
+        var file = await SearchFileNameAsync(fileName)!;
+
+        if (file == null)
+        {
+            throw new FileNotFoundException();
+        }
+        
+        return file;
+    }
+
+    public async Task<BlobEntity> RenameFileAsync(string currentFileName, string newName)
+    {
+        var file = await SearchFileNameAsync(currentFileName);
+        
+        if (file == null)
+        {
+            throw new FileNotFoundException();
+        }
+
+        file.FileName = newName;
+        return await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
+    }
+
+    private async Task<BlobEntity> SearchFileNameAsync(string fileName)
     {
         var query = _dataContainer.GetItemLinqQueryable<BlobEntity>()
-            .Where(u => u.Id == id)
+            .Where(x => x.FileName == fileName)
             .Take(1)
             .ToFeedIterator();
-        
+
         if (query.HasMoreResults)
         {
             var response = await query.ReadNextAsync();
-            return response.FirstOrDefault();
+            var res = response.FirstOrDefault();
+            return res;
         }
 
         return null;

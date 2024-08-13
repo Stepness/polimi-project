@@ -1,6 +1,0 @@
-@PolimiProject_HostAddress = http://localhost:5245
-
-GET {{PolimiProject_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

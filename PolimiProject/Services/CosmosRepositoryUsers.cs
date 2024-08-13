@@ -24,13 +24,10 @@ public class CosmosRepositoryUsers : IRepositoryUsers
             .Take(1)
             .ToFeedIterator();
 
-        if (query.HasMoreResults)
-        {
-            var response = await query.ReadNextAsync();
-            return response.FirstOrDefault();
-        }
+        if (!query.HasMoreResults) return null;
+        var response = await query.ReadNextAsync();
+        return response.FirstOrDefault();
 
-        return null;
     }
 
     public async Task<List<UserEntity>> GetAllUsers()
@@ -79,7 +76,7 @@ public class CosmosRepositoryUsers : IRepositoryUsers
         return new AddUserResult { Result = AddUserResultType.Success };
     }
     
-    public async Task<bool> UpdateUserRoleToViewer(string username)
+    public async Task<bool> UpdateUserRoleToWriter(string username)
     {
         var user = await GetUserByUsernameAsync(username);
     
@@ -95,13 +92,13 @@ public class CosmosRepositoryUsers : IRepositoryUsers
             return false;
         }
 
-        user.Role = Roles.Viewer;
+        user.Role = Roles.Writer;
     
-        var response = await _loginContainer.ReplaceItemAsync(user, user.Id);
+        var response = await _loginContainer.UpsertItemAsync(user);
     
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine($"User with ID '{username}' role updated to 'Admin'.");
+            Console.WriteLine($"User with ID '{username}' role updated to 'Writer'.");
             return true;
         }
     
@@ -110,7 +107,7 @@ public class CosmosRepositoryUsers : IRepositoryUsers
     }
 
 
-    private async Task<UserEntity?> GetUserByUsernameAsync(string username)
+    private async Task<UserEntity> GetUserByUsernameAsync(string username)
     {
         var query = _loginContainer.GetItemLinqQueryable<UserEntity>()
             .Where(u => u.Username == username)
@@ -128,9 +125,8 @@ public class CosmosRepositoryUsers : IRepositoryUsers
     
     private string HashPassword(string password)
     {
-        using var sha256 = SHA256.Create();
         var bytes = Encoding.UTF8.GetBytes(password);
-        var hash = sha256.ComputeHash(bytes);
+        var hash = SHA256.HashData(bytes);
         return Convert.ToBase64String(hash);
     }
 }

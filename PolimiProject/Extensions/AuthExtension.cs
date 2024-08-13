@@ -39,10 +39,10 @@ public static class AuthExtensions
             options.AddPolicy(IdentityData.AdminUserPolicy,
                 policy => policy.RequireClaim(IdentityData.RoleClaim, Roles.Admin));
 
-            options.AddPolicy(IdentityData.ViewerUserPolicy,
-                policy => policy.RequireClaim(IdentityData.RoleClaim, Roles.Admin, Roles.Viewer));
+            options.AddPolicy(IdentityData.WriterUserPolicy,
+                policy => policy.RequireClaim(IdentityData.RoleClaim, Roles.Admin, Roles.Writer));
         });
-
+        
         return serviceCollection;
     }
 }

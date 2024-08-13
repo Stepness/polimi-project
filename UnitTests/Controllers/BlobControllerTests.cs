@@ -31,7 +31,7 @@ public class BlobControllerTests
         
         var result = await sut.Upload(fileMock);
 
-        await _repositoryDataMock.Received(1).UploadFileAsync(Arg.Is<BlobEntity>(b => 
+        await _repositoryDataMock.Received(1).UpsertFileAsync(Arg.Is<BlobEntity>(b => 
             b.FileName == "test.txt" &&
             b.ContentType == "text/plain"
         ));
