@@ -52,7 +52,6 @@ public class BlobController : ControllerBase
     }
     
     [HttpGet("files")]
-    [Authorize(Policy = IdentityData.WriterUserPolicy)]
     public async Task<ActionResult> GetAllFiles()
     {
         var files =await _repositoryData.GetAllFilesAsync();

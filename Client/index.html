@@ -1,68 +1,105 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-    <script src="scripts/login.js"></script>
-    <script src="scripts/jQuery/jquery-3.7.1.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>File List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        .login-container {
-            background-color: #ffffff;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            text-align: center;
         }
-        .login-container h2 {
-            margin-bottom: 20px;
-            color: #333;
+        #file-list {
+            list-style: none;
+            padding: 0;
         }
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
-            width: 100%;
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 10px;
-            margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 3px;
+            margin-bottom: 10px;
+            border-radius: 5px;
         }
-        .login-container button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
+        .file-name {
+            flex: 1;
+        }
+        .rename-button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
             border: none;
             border-radius: 3px;
-            background-color: #28a745;
-            color: white;
-            font-size: 16px;
             cursor: pointer;
         }
-        .login-container button.register {
-            background-color: #007bff;
-            margin-top: 10px;
-        }
-        .login-container button:hover {
-            opacity: 0.9;
+        .rename-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <input type="text" placeholder="Username" id="username" required>
-        <input type="password" placeholder="Password" id="password" required>
-        <button type="submit">Login</button>
-        <button type="button" class="register" onclick="register()">Register</button>
-    </div>
+    <h1>File List</h1>
+    <ul id="file-list"></ul>
+
+    <script>
+        async function fetchFiles() {
+            try {
+                const response = await fetch('http://localhost:5245/blob/files');
+                const files = await response.json();
+
+                const fileListElement = document.getElementById('file-list');
+
+                files.forEach(file => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'file-item';
+
+                    const fileNameSpan = document.createElement('span');
+                    fileNameSpan.className = 'file-name';
+                    fileNameSpan.textContent = file.fileName;
+
+                    const renameButton = document.createElement('button');
+                    renameButton.className = 'rename-button';
+                    renameButton.textContent = 'Rename';
+                    renameButton.onclick = () => renameFile(file.fileName);
+
+                    listItem.appendChild(fileNameSpan);
+                    listItem.appendChild(renameButton);
+
+                    fileListElement.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching files:', error);
+            }
+        }
+
+        async function renameFile(oldName) {
+            const newName = prompt(`Rename "${oldName}" to:`);
+                try {
+                    jwtToken = localStorage.getItem('jwtToken');
+                    const response = await fetch(`http://localhost:5245/blob/${encodeURIComponent(oldName)}/rename?newName=${encodeURIComponent(newName)}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
+                    });
+
+                    if (response.ok) {
+                        alert(`"${oldName}" has been renamed to "${newName}".`);
+                        document.getElementById('file-list').innerHTML = '';
+                        fetchFiles();
+                    } else {
+                        alert(`Failed to rename "${oldName}".`);
+                    }
+                } catch (error) {
+                    console.error('Error renaming file:', error);
+                    alert(`Error renaming "${oldName}".`);
+                }
+        }
+
+        // Call the fetchFiles function when the page loads
+        window.onload = fetchFiles;
+    </script>
 </body>
 </html>
