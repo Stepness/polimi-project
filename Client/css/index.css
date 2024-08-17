@@ -38,3 +38,18 @@ body {
 .rename-button:hover, .download-button:hover {
     background-color: #0056b3;
 }
+
+#drop-zone {
+    margin-top: 20px;
+    padding: 20px;
+    border: 2px dashed #007bff;
+    border-radius: 5px;
+    text-align: center;
+    color: #007bff;
+    font-size: 18px;
+    cursor: pointer;
+}
+#drop-zone.dragging {
+    background-color: #e6f7ff;
+    border-color: #0056b3;
+}

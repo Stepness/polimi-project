@@ -36,6 +36,13 @@ public class CosmosRepositoryData : IRepositoryData
 
     public async Task<BlobEntity> RenameFileAsync(string currentFileName, string newName)
     {
+        var newNameFile = await SearchFileNameAsync(newName);
+
+        if (newNameFile != null)
+        {
+            throw new Exception("New name not valid. File already exists");
+        }
+            
         var file = await SearchFileNameAsync(currentFileName);
         
         if (file == null)

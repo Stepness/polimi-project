@@ -11,8 +11,30 @@
 <body>
     <h1>File List</h1>
     <ul id="file-list"></ul>
+    <div id="drop-zone">Drag & Drop Files Here to Upload</div>
     <script>
         window.onload = fetchFiles();
+
+        const dropZone = document.getElementById('drop-zone');
+
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('dragging');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragging');
+        });
+
+        dropZone.addEventListener('drop', async (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('dragging');
+
+            const files = event.dataTransfer.files;
+            for (let file of files) {
+                await uploadFile(file);
+            }
+        });
     </script>
 </body>
 </html>

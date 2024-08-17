@@ -19,16 +19,16 @@ public class BlobController : ControllerBase
     
     [HttpPost("upload")]
     [Authorize(Policy = IdentityData.WriterUserPolicy)]
-    public async Task<ActionResult> Upload(IFormFile model)
+    public async Task<ActionResult> Upload([FromForm] IFormFile file)
     {
         using var ms = new MemoryStream();
-        await model.CopyToAsync(ms);
+        await file.CopyToAsync(ms);
         var fileBytes = ms.ToArray();
         
         var blob = new BlobEntity()
         {
-            FileName = model.FileName,
-            ContentType = model.ContentType,
+            FileName = file.FileName,
+            ContentType = file.ContentType,
             Data = fileBytes
         };
         

@@ -40,26 +40,26 @@ async function fetchFiles() {
 
 async function renameFile(oldName) {
     let newName = prompt(`Rename "${oldName}" to:`);
-        try {
-            jwtToken = localStorage.getItem('jwtToken');
-            let response = await fetch(`http://localhost:5245/blob/${oldName}/rename?newName=${newName}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': 'Bearer ' + jwtToken
-                },
-            });
+    if (newName) {
+        const jwtToken = localStorage.getItem('jwtToken');
 
-            if (response.ok) {
+        $.ajax({
+            url: `http://localhost:5245/blob/${oldName}/rename?newName=${newName}`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            success: function(response) {
                 alert(`"${oldName}" has been renamed to "${newName}".`);
                 document.getElementById('file-list').innerHTML = '';
                 fetchFiles();
-            } else {
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
                 alert(`Failed to rename "${oldName}".`);
+                console.error('Error renaming file:', errorThrown);
             }
-        } catch (error) {
-            console.error('Error renaming file:', error);
-            alert(`Error renaming "${oldName}".`);
-        }
+        });
+    }
 }
 
 function downloadFile(fileName) {
@@ -68,4 +68,30 @@ function downloadFile(fileName) {
     link.href = downloadUrl;
     link.download = fileName;
     link.click();
+}
+
+async function uploadFile(file) {
+    let formData = new FormData();
+    formData.append('file', file);
+    let jwtToken = localStorage.getItem('jwtToken');
+
+    await $.ajax({
+        url: 'http://localhost:5245/blob/upload',
+        type: 'POST',
+        data: formData,
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            console.log('File uploaded successfully');
+            document.getElementById('file-list').innerHTML = '';
+            fetchFiles();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error uploading file:', errorThrown);
+            alert(`Failed to upload "${file.name}".`);
+        }
+    });
 }
