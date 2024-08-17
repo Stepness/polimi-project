@@ -1,105 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="css/index.css" />
+    <script src="scripts/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="scripts/index.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        #file-list {
-            list-style: none;
-            padding: 0;
-        }
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .file-name {
-            flex: 1;
-        }
-        .rename-button {
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .rename-button:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <h1>File List</h1>
     <ul id="file-list"></ul>
-
     <script>
-        async function fetchFiles() {
-            try {
-                const response = await fetch('http://localhost:5245/blob/files');
-                const files = await response.json();
-
-                const fileListElement = document.getElementById('file-list');
-
-                files.forEach(file => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'file-item';
-
-                    const fileNameSpan = document.createElement('span');
-                    fileNameSpan.className = 'file-name';
-                    fileNameSpan.textContent = file.fileName;
-
-                    const renameButton = document.createElement('button');
-                    renameButton.className = 'rename-button';
-                    renameButton.textContent = 'Rename';
-                    renameButton.onclick = () => renameFile(file.fileName);
-
-                    listItem.appendChild(fileNameSpan);
-                    listItem.appendChild(renameButton);
-
-                    fileListElement.appendChild(listItem);
-                });
-            } catch (error) {
-                console.error('Error fetching files:', error);
-            }
-        }
-
-        async function renameFile(oldName) {
-            const newName = prompt(`Rename "${oldName}" to:`);
-                try {
-                    jwtToken = localStorage.getItem('jwtToken');
-                    const response = await fetch(`http://localhost:5245/blob/${encodeURIComponent(oldName)}/rename?newName=${encodeURIComponent(newName)}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + jwtToken
-                        },
-                    });
-
-                    if (response.ok) {
-                        alert(`"${oldName}" has been renamed to "${newName}".`);
-                        document.getElementById('file-list').innerHTML = '';
-                        fetchFiles();
-                    } else {
-                        alert(`Failed to rename "${oldName}".`);
-                    }
-                } catch (error) {
-                    console.error('Error renaming file:', error);
-                    alert(`Error renaming "${oldName}".`);
-                }
-        }
-
-        // Call the fetchFiles function when the page loads
-        window.onload = fetchFiles;
+        window.onload = fetchFiles();
     </script>
 </body>
 </html>
