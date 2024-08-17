@@ -19,19 +19,27 @@ public class Program
         builder.Services.AddCustomAuthorization();
 
         var cosmosDbConnectionString = builder.Configuration["CosmosDbConnectionString"];
-        builder.Services.AddScoped<IRepositoryUsers, CosmosRepositoryUsers>();
-        builder.Services.AddScoped<IRepositoryData, CosmosRepositoryData>();
-
-        builder.Services.AddSingleton(new CosmosClient(
-            cosmosDbConnectionString,
-            new CosmosClientOptions
-            {
-                SerializerOptions = new CosmosSerializationOptions
+        if (cosmosDbConnectionString != null)
+        {
+            builder.Services.AddSingleton(new CosmosClient(
+                cosmosDbConnectionString,
+                new CosmosClientOptions
                 {
-                    PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+                    SerializerOptions = new CosmosSerializationOptions
+                    {
+                        PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+                    }
                 }
-            }
-        ));
+            ));
+            
+            builder.Services.AddScoped<IRepositoryData, CosmosRepositoryData>();
+            builder.Services.AddScoped<IRepositoryUsers, CosmosRepositoryUsers>();
+        }
+        else
+        {
+            builder.Services.AddSingleton<IRepositoryData, InMemoryRepositoryData>();
+            builder.Services.AddSingleton<IRepositoryUsers, InMemoryRepositoryUsers>();
+        }
         
         const string allowedOrigins = "AllowedOrigins";
         builder.Services.AddCors(options =>
