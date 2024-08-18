@@ -45,7 +45,6 @@ public class BlobControllerTests
         var blobEntity = new BlobEntity
         {
             FileName = "test.txt",
-            ContentDisposition = "attachment; filename=test.txt",
             ContentType = "text/plain",
             Data = []
         };

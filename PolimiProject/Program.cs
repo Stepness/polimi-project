@@ -21,17 +21,7 @@ public class Program
         var cosmosDbConnectionString = builder.Configuration["CosmosDbConnectionString"];
         if (cosmosDbConnectionString != null)
         {
-            builder.Services.AddSingleton(new CosmosClient(
-                cosmosDbConnectionString,
-                new CosmosClientOptions
-                {
-                    SerializerOptions = new CosmosSerializationOptions
-                    {
-                        PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
-                    }
-                }
-            ));
-            
+            builder.Services.AddScoped<ICosmosClientFactory, CosmosClientFactory>();
             builder.Services.AddScoped<IRepositoryData, CosmosRepositoryData>();
             builder.Services.AddScoped<IRepositoryUsers, CosmosRepositoryUsers>();
         }

@@ -8,8 +8,9 @@ public class CosmosRepositoryData : IRepositoryData
 {
     private readonly Container _dataContainer;
 
-    public CosmosRepositoryData(CosmosClient cosmosClient)
+    public CosmosRepositoryData(ICosmosClientFactory cosmosFactory)
     {
+        var cosmosClient = cosmosFactory.Create();
         _dataContainer = cosmosClient.GetContainer("polimiproject", "data");
     }
 

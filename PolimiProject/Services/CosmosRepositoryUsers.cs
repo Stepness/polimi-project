@@ -12,8 +12,9 @@ public class CosmosRepositoryUsers : IRepositoryUsers
     
     private readonly Container _loginContainer;
     
-    public CosmosRepositoryUsers(CosmosClient cosmosClient)
+    public CosmosRepositoryUsers(ICosmosClientFactory cosmosFactory)
     {
+        var cosmosClient = cosmosFactory.Create();
         _loginContainer = cosmosClient.GetContainer("polimiproject", "users");
     }
     public async Task<UserEntity?> Authenticate(string username, string password)
