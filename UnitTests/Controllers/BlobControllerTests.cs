@@ -1,3 +1,4 @@
+using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,11 @@ public class BlobControllerTests
 {
     private readonly IRepositoryData _repositoryDataMock;
     private readonly BlobController sut;
+    private readonly Fixture _fixture;
 
     public BlobControllerTests()
     {
+        _fixture = new Fixture();
         _repositoryDataMock = Substitute.For<IRepositoryData>();
         sut = new BlobController(_repositoryDataMock);
     }
@@ -42,18 +45,17 @@ public class BlobControllerTests
     [Fact]
     public async Task WhenDownload_Controller_ShouldReturnFile()
     {
-        var blobEntity = new BlobEntity
-        {
-            FileName = "test.txt",
-            ContentType = "text/plain",
-            Data = []
-        };
+        _fixture.Customize<BlobEntity>(x => 
+            x.With(entity => entity.ContentType, "text/plain"));
         
-        _repositoryDataMock.DownloadFileAsync(Arg.Any<string>()).Returns(blobEntity);
+        var expectedEntity = _fixture.Create<BlobEntity>();
+        
+        _repositoryDataMock.DownloadFileAsync(Arg.Any<string>()).Returns(expectedEntity);
 
-        var result = await sut.Download("123");
+        var result = await sut.Download(expectedEntity.FileName);
 
-        result.Result.As<FileContentResult>().ContentType.Should().Be("text/plain");
-        result.Result.As<FileContentResult>().FileDownloadName.Should().Be("test.txt");
+        await _repositoryDataMock.Received(1).DownloadFileAsync(expectedEntity.FileName);
+        result.Result.As<FileContentResult>().ContentType.Should().Be(expectedEntity.ContentType);
+        result.Result.As<FileContentResult>().FileDownloadName.Should().Be(expectedEntity.FileName);
     }
 }

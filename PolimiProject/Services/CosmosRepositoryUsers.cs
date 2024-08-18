@@ -17,7 +17,8 @@ public class CosmosRepositoryUsers : IRepositoryUsers
         var cosmosClient = cosmosFactory.Create();
         _loginContainer = cosmosClient.GetContainer("polimiproject", "users");
     }
-    public async Task<UserEntity?> Authenticate(string username, string password)
+    
+    public async Task<UserEntity> Authenticate(string username, string password)
     {
         var query = _loginContainer.GetItemLinqQueryable<UserEntity>()
             .Where(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) 
