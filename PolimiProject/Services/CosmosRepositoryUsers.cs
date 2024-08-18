@@ -11,23 +11,23 @@ public class CosmosRepositoryUsers : IRepositoryUsers
 {
     
     private readonly Container _loginContainer;
+    private ICosmosLinqQuery _cosmosLinqQuery;
     
-    public CosmosRepositoryUsers(ICosmosClientFactory cosmosFactory)
+    public CosmosRepositoryUsers(ICosmosClientFactory cosmosFactory, ICosmosLinqQuery cosmosLinqQuery)
     {
         var cosmosClient = cosmosFactory.Create();
         _loginContainer = cosmosClient.GetContainer("polimiproject", "users");
+        _cosmosLinqQuery = cosmosLinqQuery;
     }
     
     public async Task<UserEntity> Authenticate(string username, string password)
     {
         var query = _loginContainer.GetItemLinqQueryable<UserEntity>()
-            .Where(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) 
-                        && u.Password == HashPassword(password))
-            .Take(1)
-            .ToFeedIterator();
-
-        if (!query.HasMoreResults) return null;
-        var response = await query.ReadNextAsync();
+            .Where(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)
+                        && u.Password == HashPassword(password));
+        
+        var response = await _cosmosLinqQuery.ListResultAsync(query);
+        
         return response.FirstOrDefault();
 
     }
@@ -35,17 +35,10 @@ public class CosmosRepositoryUsers : IRepositoryUsers
     public async Task<List<UserEntity>> GetAllUsers()
     {
         var query = _loginContainer
-            .GetItemLinqQueryable<UserEntity>()
-            .ToFeedIterator();
+            .GetItemLinqQueryable<UserEntity>();
         
-        var results = new List<UserEntity>();
-
-        while (query.HasMoreResults)
-        {
-            var response = await query.ReadNextAsync();
-            results.AddRange(response.ToList());
-        }
-
+        var results = await _cosmosLinqQuery.ListResultAsync(query);
+        
         return results;
     }
 
@@ -75,7 +68,7 @@ public class CosmosRepositoryUsers : IRepositoryUsers
         }
 
         Console.WriteLine($"Failed to add user with username '{user.Username}'.");
-        return new AddUserResult { Result = AddUserResultType.Success };
+        return new AddUserResult { Result = AddUserResultType.Failure };
     }
     
     public async Task<bool> UpdateUserRoleToWriter(string username)
@@ -112,17 +105,11 @@ public class CosmosRepositoryUsers : IRepositoryUsers
     private async Task<UserEntity> GetUserByUsernameAsync(string username)
     {
         var query = _loginContainer.GetItemLinqQueryable<UserEntity>()
-            .Where(u => u.Username == username)
-            .Take(1)
-            .ToFeedIterator();
+            .Where(u => u.Username == username);
 
-        if (query.HasMoreResults)
-        {
-            var response = await query.ReadNextAsync();
-            return response.FirstOrDefault();
-        }
-
-        return null;
+        var response = await _cosmosLinqQuery.ListResultAsync(query);
+        
+        return response.FirstOrDefault();
     }
     
     private string HashPassword(string password)

@@ -6,11 +6,13 @@ namespace PolimiProject.Services;
 
 public class CosmosRepositoryData : IRepositoryData
 {
+    private readonly ICosmosLinqQuery _cosmosLinqQuery;
     private readonly Container _dataContainer;
 
-    public CosmosRepositoryData(ICosmosClientFactory cosmosFactory)
+    public CosmosRepositoryData(ICosmosClientFactory cosmosFactory, ICosmosLinqQuery cosmosLinqQuery)
     {
         var cosmosClient = cosmosFactory.Create();
+        _cosmosLinqQuery = cosmosLinqQuery;
         _dataContainer = cosmosClient.GetContainer("polimiproject", "data");
     }
 
@@ -57,21 +59,16 @@ public class CosmosRepositoryData : IRepositoryData
 
     public async Task<List<BlobEntity>> GetAllFilesAsync()
     {
-        var result = new List<BlobEntity>();
-        var files = _dataContainer.GetItemLinqQueryable<BlobEntity>().Select(x=>new
+        
+        var query = _dataContainer.GetItemLinqQueryable<BlobEntity>().Select(x => new
             BlobEntity
             {
                 Id = x.Id,
                 FileName = x.FileName,
                 ContentType = x.ContentType
-            }
-        ).ToFeedIterator();
+            });
         
-        while (files.HasMoreResults)
-        {
-            var response = await files.ReadNextAsync();
-            result.AddRange(response.Resource);
-        }
+        var result = await _cosmosLinqQuery.ListResultAsync(query);
 
         return result;
     }
@@ -79,16 +76,10 @@ public class CosmosRepositoryData : IRepositoryData
     private async Task<BlobEntity> SearchFileNameAsync(string fileName)
     {
         var query = _dataContainer.GetItemLinqQueryable<BlobEntity>()
-            .Where(x => x.FileName == fileName)
-            .Take(1)
-            .ToFeedIterator();
+            .Where(x => x.FileName == fileName);
 
-        if (query.HasMoreResults)
-        {
-            var response = await query.ReadNextAsync();
-            return response.FirstOrDefault();
-        }
+        var result = await _cosmosLinqQuery.ListResultAsync(query);
 
-        return null;
+        return result.FirstOrDefault();
     }
 }

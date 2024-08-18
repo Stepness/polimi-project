@@ -1,4 +1,3 @@
-using Microsoft.Azure.Cosmos;
 using PolimiProject.Extensions;
 using PolimiProject.Services;
 
@@ -21,6 +20,7 @@ public class Program
         var cosmosDbConnectionString = builder.Configuration["CosmosDbConnectionString"];
         if (cosmosDbConnectionString != null)
         {
+            builder.Services.AddScoped<ICosmosLinqQuery, CosmosLinqQuery>();
             builder.Services.AddScoped<ICosmosClientFactory, CosmosClientFactory>();
             builder.Services.AddScoped<IRepositoryData, CosmosRepositoryData>();
             builder.Services.AddScoped<IRepositoryUsers, CosmosRepositoryUsers>();

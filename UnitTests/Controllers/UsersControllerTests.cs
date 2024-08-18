@@ -1,3 +1,4 @@
+using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -116,5 +117,29 @@ public class UsersControllerTests
         result.Should().BeOfType<UnauthorizedObjectResult>()
             .Which.Value.Should().BeEquivalentTo(new { message = "Username or password is incorrect" });
 
+    }
+    
+    [Fact]
+    public async Task WhenPromotingRole_ShouldReturnTrue()
+    {
+        var username = new Fixture().Create<string>();
+        _repositoryUsersMock.UpdateUserRoleToWriter(username).Returns(true);
+
+        var result = await sut.PromoteRole(username);
+
+        result.Should().BeOfType<OkResult>();
+        await _repositoryUsersMock.Received(1).UpdateUserRoleToWriter(username);
+    }
+    
+    [Fact]
+    public async Task WhenFailingPromotingRole_ShouldReturnFalse()
+    {
+        var username = new Fixture().Create<string>();
+        _repositoryUsersMock.UpdateUserRoleToWriter(username).Returns(false);
+
+        var result = await sut.PromoteRole(username);
+
+        result.Should().BeOfType<BadRequestResult>();
+        await _repositoryUsersMock.Received(1).UpdateUserRoleToWriter(username);
     }
 }

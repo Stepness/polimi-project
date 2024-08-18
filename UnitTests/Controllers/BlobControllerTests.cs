@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using PolimiProject.Controllers;
 using PolimiProject.Models;
 using PolimiProject.Services;
@@ -57,5 +58,41 @@ public class BlobControllerTests
         await _repositoryDataMock.Received(1).DownloadFileAsync(expectedEntity.FileName);
         result.Result.As<FileContentResult>().ContentType.Should().Be(expectedEntity.ContentType);
         result.Result.As<FileContentResult>().FileDownloadName.Should().Be(expectedEntity.FileName);
+    }
+    
+     [Fact]
+    public async Task WhenRename_ShouldInvokeRename()
+    {
+        var fileName = _fixture.Create<string>();
+        var newName = _fixture.Create<string>();
+
+        var result = await sut.Rename(fileName, newName);
+
+        await _repositoryDataMock.Received(1).RenameFileAsync(fileName, newName);
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [Fact]
+    public void WhenRenameFails_ShouldThrowException()
+    {
+        var fileName = _fixture.Create<string>();
+        var newName = _fixture.Create<string>();
+        _repositoryDataMock.When(x => x.RenameFileAsync(fileName, newName))
+                           .Throw(new Exception("Rename failed"));
+
+        sut.Rename(fileName, newName).Should().Throws<Exception>();
+    }
+    
+    
+    [Fact]
+    public async Task WhenGetAllFiles_ShouldReturnFilesList()
+    {
+        var expectedFiles = _fixture.Create<List<BlobEntity>>();
+        _repositoryDataMock.GetAllFilesAsync().Returns(expectedFiles);
+    
+        var result = await sut.GetAllFiles();
+    
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.Value.Should().Be(expectedFiles);
     }
 }
