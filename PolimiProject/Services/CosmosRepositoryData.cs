@@ -64,6 +64,12 @@ public class CosmosRepositoryData : IRepositoryData
         return await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
     }
 
+    public async Task<BlobEntity> DeleteFileAsync(string fileName)
+    {
+        var file = await SearchFileNameAsync(fileName);
+        return await _dataContainer.DeleteItemAsync<BlobEntity>(file.Id, new PartitionKey(file.Id));
+    }
+
     public async Task<List<BlobEntity>> GetAllFilesAsync()
     {
         

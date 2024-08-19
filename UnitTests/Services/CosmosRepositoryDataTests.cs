@@ -196,6 +196,23 @@ public class CosmosRepositoryDataTests
     }
     
     [Fact]
+    public async Task WhenDeleteFileName_ShouldDeleteFile()
+    {
+        var file = _fixture.Create<BlobEntity>();
+
+        _linqQuery.ListResultAsync(Arg.Any<IQueryable<BlobEntity>>()).Returns([file]);
+
+        var response = Substitute.For<ItemResponse<BlobEntity>>();
+        response.Resource.Returns(file);
+
+        var sut = new CosmosRepositoryData(_mockFactory, _linqQuery);
+        await sut.DeleteFileAsync(file.FileName);
+
+        await _linqQuery.Received(1).ListResultAsync(Arg.Any<IQueryable<BlobEntity>>());
+        await _mockContainer.Received(1).DeleteItemAsync<BlobEntity>(file.Id, Arg.Any<PartitionKey>());
+    }
+    
+    [Fact]
     public async Task WhenGetAllFiles_ShouldReturnFilesList()
     {
         var expectedFiles = _fixture.CreateMany<BlobEntity>().ToList();

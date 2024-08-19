@@ -51,6 +51,14 @@ public class BlobController : ControllerBase
         return Ok();
     }
     
+    [HttpDelete("{fileName}/delete")]
+    [Authorize(Policy = IdentityData.WriterUserPolicy)]
+    public async Task<ActionResult> Delete(string fileName)
+    {
+        await _repositoryData.DeleteFileAsync(fileName);
+        return Ok();
+    }
+    
     [HttpGet("files")]
     public async Task<ActionResult> GetAllFiles()
     {

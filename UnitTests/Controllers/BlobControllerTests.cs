@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -82,6 +83,17 @@ public class BlobControllerTests
 
         var act = () => sut.Rename(fileName, newName);
         await act.Should().ThrowAsync<Exception>();
+    }
+    
+    [Fact]
+    public async Task WhenDelete_ShouldDeleteFile()
+    {
+        var file = _fixture.Create<BlobEntity>();
+        _repositoryDataMock.DeleteFileAsync(file.FileName).Returns(file);
+
+        var result = await sut.Delete(file.FileName);
+        result.Should().BeOfType<OkResult>();
+        await _repositoryDataMock.Received(1).DeleteFileAsync(file.FileName);
     }
     
     

@@ -4,7 +4,7 @@ namespace PolimiProject.Services;
 
 public class InMemoryRepositoryData : IRepositoryData
 {
-    private List<BlobEntity> _files = new();
+    private readonly List<BlobEntity> _files = [];
     
     public Task UpsertFileAsync(BlobEntity file)
     {
@@ -22,6 +22,13 @@ public class InMemoryRepositoryData : IRepositoryData
     {
         var file = _files.FirstOrDefault(x => x.FileName == currentFileName);
         file.FileName = newName;
+        return Task.FromResult(file);
+    }
+    
+    public Task<BlobEntity> DeleteFileAsync(string fileName)
+    {
+        var file = _files.FirstOrDefault(x => x.FileName == fileName);
+        _files.Remove(file);
         return Task.FromResult(file);
     }
 
