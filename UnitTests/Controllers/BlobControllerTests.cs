@@ -73,14 +73,15 @@ public class BlobControllerTests
     }
 
     [Fact]
-    public void WhenRenameFails_ShouldThrowException()
+    public async Task WhenRenameFails_ShouldThrowException()
     {
         var fileName = _fixture.Create<string>();
         var newName = _fixture.Create<string>();
         _repositoryDataMock.When(x => x.RenameFileAsync(fileName, newName))
                            .Throw(new Exception("Rename failed"));
 
-        sut.Rename(fileName, newName).Should().Throws<Exception>();
+        var act = () => sut.Rename(fileName, newName);
+        await act.Should().ThrowAsync<Exception>();
     }
     
     

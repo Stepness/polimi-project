@@ -11,7 +11,7 @@ public class CosmosRepositoryUsers : IRepositoryUsers
 {
     
     private readonly Container _loginContainer;
-    private ICosmosLinqQuery _cosmosLinqQuery;
+    private readonly ICosmosLinqQuery _cosmosLinqQuery;
     
     public CosmosRepositoryUsers(ICosmosClientFactory cosmosFactory, ICosmosLinqQuery cosmosLinqQuery)
     {

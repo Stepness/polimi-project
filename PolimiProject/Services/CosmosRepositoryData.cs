@@ -22,7 +22,12 @@ public class CosmosRepositoryData : IRepositoryData
 
         file.Id = existingFile is null ? Guid.NewGuid().ToString() : existingFile.Id;
 
-        await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
+        var response = await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
+        
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            throw new Exception($"Failed upserting File: {file.FileName}");
+        }
     }
 
     public async Task<BlobEntity> DownloadFileAsync(string fileName)
