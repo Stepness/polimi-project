@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using PolimiProject.Models;
@@ -91,7 +92,7 @@ public class CosmosRepositoryUsers : IRepositoryUsers
     
         var response = await _loginContainer.UpsertItemAsync(user);
     
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created)
         {
             Console.WriteLine($"User with ID '{username}' role updated to 'Writer'.");
             return true;

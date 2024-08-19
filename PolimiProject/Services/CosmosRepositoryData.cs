@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using PolimiProject.Models;
@@ -24,7 +25,8 @@ public class CosmosRepositoryData : IRepositoryData
 
         var response = await _dataContainer.UpsertItemAsync(file, new PartitionKey(file.Id));
         
-        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        
+        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created)
         {
             throw new Exception($"Failed upserting File: {file.FileName}");
         }
