@@ -23,7 +23,6 @@ public class CosmosRepositoryUsersTests
         _mockFactory = Substitute.For<ICosmosClientFactory>();
         _linqQuery = Substitute.For<ICosmosLinqQuery>();
 
-        
         mockClient.GetContainer(Arg.Any<string>(), Arg.Any<string>())
             .Returns(_mockContainer);
         _mockFactory.Create().Returns(mockClient);
@@ -172,7 +171,7 @@ public class CosmosRepositoryUsersTests
     public async Task WhenUpdateUserRole_ShouldReturnTrue()
     {
         var user = _fixture.Build<UserEntity>().With(u => u.Role, Roles.Reader).Create();
-        var users = new List<UserEntity>() { user };
+        var users = new List<UserEntity> { user };
 
         _linqQuery.ListResultAsync(Arg.Any<IQueryable<UserEntity>>()).Returns(users);
         _mockContainer.GetItemLinqQueryable<UserEntity>().Returns(new List<UserEntity>().AsQueryable());
