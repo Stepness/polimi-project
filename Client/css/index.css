@@ -53,3 +53,27 @@ body {
     background-color: #e6f7ff;
     border-color: #0056b3;
 }
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+header h1 {
+    margin: 0;
+}
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+.header-buttons button {
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+.header-buttons button:hover {
+    background-color: #45a049;
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/manage-users.css" />
+    <title>Manage Users</title>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Manage Users</h1>
+        <div class="header-buttons">
+            <button id="logout">Logout</button>
+        </div>
+    </header>
+
+    <!-- Users Table -->
+    <table id="users-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- User rows will be inserted here via JavaScript -->
+        </tbody>
+    </table>
+
+    <script src="scripts/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="scripts/manage-users.js"></script>
+    <script>
+        window.onload = loadUsers();
+    </script>
+</body>
+</html>

@@ -2,16 +2,28 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="css/index.css" />
-    <script src="scripts/jQuery/jquery-3.7.1.min.js"></script>
-    <script src="scripts/index.js"></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File List</title>
+    <title id="title">File List</title>
+    <style>
+        
+    </style>
 </head>
 <body>
-    <h1>File List</h1>
+    <header>
+        <h1>File List</h1>
+        <div class="header-buttons">
+            <a href="./manage-users.html"><button id="manage-users">Manage Users</button></a>
+            <a href="./login.html"><button id="logout">Logout</button></a>
+        </div>
+    </header>
+
     <ul id="file-list"></ul>
     <div id="drop-zone">Drag & Drop Files Here to Upload</div>
+    <script src="scripts/jQuery/jquery-3.7.1.min.js"></script>
+    <script src="scripts/jwtToken.js"></script>
+    <script src="scripts/index.js"></script>
     <script>
         window.onload = fetchFiles();
 
@@ -34,6 +46,10 @@
             for (let file of files) {
                 await uploadFile(file);
             }
+        });
+
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('jwtToken');
         });
     </script>
 </body>

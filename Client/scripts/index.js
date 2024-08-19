@@ -1,4 +1,6 @@
 async function fetchFiles() {
+    var jwtToken = getTokenBody();
+    var role = jwtToken.Role;
     try {
         const response = await fetch('http://localhost:5245/blob/files');
         const files = await response.json();
@@ -16,11 +18,6 @@ async function fetchFiles() {
             const buttonGroup = document.createElement('div');
             buttonGroup.className = 'button-group';
 
-            const renameButton = document.createElement('button');
-            renameButton.className = 'rename-button';
-            renameButton.textContent = 'Rename';
-            renameButton.onclick = () => renameFile(file.fileName);
-
             const downloadButton = document.createElement('button');
             downloadButton.className = 'download-button';
             downloadButton.textContent = 'Download';
@@ -28,8 +25,16 @@ async function fetchFiles() {
 
             listItem.appendChild(fileNameSpan);
             listItem.appendChild(buttonGroup);
-            buttonGroup.appendChild(renameButton);
             buttonGroup.appendChild(downloadButton);
+            
+            if (role == "Admin" || role == "Writer"){
+                const renameButton = document.createElement('button');
+                renameButton.className = 'rename-button';
+                renameButton.textContent = 'Rename';
+                renameButton.onclick = () => renameFile(file.fileName);
+
+                buttonGroup.appendChild(renameButton);
+            }
 
             fileListElement.appendChild(listItem);
         });
