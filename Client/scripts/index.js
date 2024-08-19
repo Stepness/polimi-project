@@ -33,7 +33,14 @@ async function fetchFiles() {
                 renameButton.textContent = 'Rename';
                 renameButton.onclick = () => renameFile(file.fileName);
 
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-button';
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = ()=> deleteFile(file.fileName);
+
+                
                 buttonGroup.appendChild(renameButton);
+                buttonGroup.appendChild(deleteButton);
             }
 
             fileListElement.appendChild(listItem);
@@ -75,6 +82,27 @@ function downloadFile(fileName) {
     link.click();
 }
 
+async function deleteFile(fileName) {
+    const jwtToken = localStorage.getItem('jwtToken');
+
+    $.ajax({
+        url: `http://localhost:5245/blob/${fileName}/delete`,
+        type: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        success: function(response) {
+            alert(`"${fileName}" has been deleted.`);
+            document.getElementById('file-list').innerHTML = '';
+            fetchFiles();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(`Failed to delete "${fileName}".`);
+            console.error('Error deleting file:', errorThrown);
+        }
+    });
+}
+
 async function uploadFile(file) {
     let formData = new FormData();
     formData.append('file', file);
@@ -99,4 +127,5 @@ async function uploadFile(file) {
             alert(`Failed to upload "${file.name}".`);
         }
     });
+
 }
