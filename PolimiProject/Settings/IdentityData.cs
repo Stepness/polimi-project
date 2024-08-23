@@ -1,4 +1,4 @@
-namespace PolimiProject.Identity;
+namespace PolimiProject.Settings;
 
 public static class IdentityData
 {

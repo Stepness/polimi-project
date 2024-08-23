@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.Extensions.DependencyInjection;
 using PolimiProject.Extensions;
-using PolimiProject.Identity;
+using PolimiProject.Settings;
 
 namespace UnitTests.Extensions;
 

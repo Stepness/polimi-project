@@ -1,5 +1,4 @@
 using System.Text;
-using PolimiProject.Identity;
 using PolimiProject.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
