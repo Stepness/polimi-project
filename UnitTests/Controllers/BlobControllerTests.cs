@@ -25,7 +25,7 @@ public class BlobControllerTests
     }
 
     [Fact]
-    public async Task WhenUpload_Controller_ShouldReturnOk()
+    public async Task WhenUpload_ShouldReturnOk()
     {
         var fileMock = Substitute.For<IFormFile>();
         var ms = new MemoryStream();
@@ -45,7 +45,7 @@ public class BlobControllerTests
     }
     
     [Fact]
-    public async Task WhenDownload_Controller_ShouldReturnFile()
+    public async Task WhenDownload_ShouldReturnFile()
     {
         _fixture.Customize<BlobEntity>(x => 
             x.With(entity => entity.ContentType, "text/plain"));
